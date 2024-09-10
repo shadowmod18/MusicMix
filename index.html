@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Там таз стелит (Slow Remix)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('https://i.pinimg.com/474x/6a/22/8f/6a228f50e53514d22d5b163e768a2dbf.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            user-select: none; /* Empêche la sélection de texte */
+        }
+        .music-container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            animation: fadeIn 2s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .music-container img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+            pointer-events: none; /* Empêche les clics sur l'image */
+            animation: pulse 2s infinite;
+            -webkit-user-drag: none; /* Empêche le glisser-déposer */
+        }
+        .music-container h1 {
+            margin: 10px 0;
+            font-size: 24px;
+            animation: slideIn 1s ease-in-out;
+        }
+        .music-container audio {
+            width: 100%;
+            margin-top: 10px;
+            border: none;
+            outline: none;
+            animation: fadeIn 2s ease-in-out;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .controls button {
+            background: #ff4081;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .controls button:hover {
+            background: #e91e63;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        #visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div id="visualizer"></div>
+    <div class="music-container">
+        <img src="https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/43/cf/11/43cf11e7-fd50-1ede-7eb6-4cfecde2647c/cover.jpg/1200x1200bf-60.jpg" alt="Image de la musique">
+        <h1>Там таз стелит (Slow Remix)</h1>
+        <audio id="audio" controls oncontextmenu="return false;">
+            <source src="https://mail.google.com/mail/u/0?ui=2&ik=6fe109d77e&attid=0.1&permmsgid=msg-a:r2434615504786426810&th=191dddfacdd211ac&view=att&disp=safe&realattid=f_m0wyeaao0" type="audio/mpeg">
+            Ton navigateur ne supporte pas l'élément audio.
+        </audio>
+        <div class="controls">
+            <button onclick="document.getElementById('audio').play()"><i class="fas fa-play"></i> Play</button>
+            <button onclick="document.getElementById('audio').pause()"><i class="fas fa-pause"></i> Pause</button>
+        </div>
+    </div>
+    <script>
+        // Empêche le clic droit sur l'image et l'audio
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Visualiseur de musique avec p5.js
+        let audioElement, fft, soundFile;
+
+        function setup() {
+            let cnv = createCanvas(windowWidth, windowHeight);
+            cnv.parent('visualizer');
+            audioElement = document.getElementById('audio');
+            soundFile = new p5.AudioIn();
+            soundFile.start();
+            fft = new p5.FFT();
+            fft.setInput(soundFile);
+        }
+
+        function draw() {
+            background(0, 0, 0, 0);
+            let spectrum = fft.analyze();
+            noStroke();
+            fill(255, 0, 255);
+            for (let i = 0; i < spectrum.length; i++) {
+                let x = map(i, 0, spectrum.length, 0, width);
+                let h = -height + map(spectrum[i], 0, 255, height, 0);
+                rect(x, height, width / spectrum.length, h);
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+</body>
+</html>
